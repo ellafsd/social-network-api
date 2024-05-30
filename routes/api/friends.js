@@ -1,11 +1,12 @@
 const router = require('express').Router();
-const { addFriend, removeFriend } = require('../../controllers/friendsController');
+const User = require('../../model/User'); 
 
 // Add a new friend to a user's friend list
-router.post('/api/users/:userId/friends/:friendId', async (req, res) => {
+router.post('/:userId/friends/:friendId', async (req, res) => {
   try {
-    const { userId, friendId } = req.params;
-
+    const  userId = req.params.userId;
+    const friendId = req.params.friendId;
+    console.log(userId);
     // Find the user and add the friendId to the friends array
     const user = await User.findByIdAndUpdate(
       userId,
@@ -13,10 +14,10 @@ router.post('/api/users/:userId/friends/:friendId', async (req, res) => {
       { new: true }   // Return the updated document
     );
 
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
     res.status(200).json(user);
   } catch (err) {
     res.status(500).json(err);
@@ -25,7 +26,7 @@ router.post('/api/users/:userId/friends/:friendId', async (req, res) => {
 
 
 // Remove a friend from a user's friend list
-router.delete('/api/users/:userId/friends/:friendId', async (req, res) => {
+router.delete('/:userId/friends/:friendId', async (req, res) => {
   try {
     const { userId, friendId } = req.params;
 

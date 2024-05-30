@@ -1,4 +1,4 @@
-const { User, Thought } = require('../models');
+const { User, Thought } = require('../model');
 
 module.exports = {
   // Get all users
@@ -64,12 +64,15 @@ module.exports = {
 
   // Add a friend to a user's friend list
   async addFriend(req, res) {
+    if (!mongoose.Types.ObjectId.isValid(req.params.friendId)) {
+      return res.status(400).json({ message: 'Invalid friend ID' });
+    }
     try {
       const user = await User.findByIdAndUpdate(
         req.params.userId,
         { $addToSet: { friends: req.params.friendId } },
         { new: true }
-      );
+      ).populate('friends');
       if (!user) {
         return res.status(404).json({ message: 'No user found with this id!' });
       }
@@ -78,6 +81,21 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+  // async addFriend(req, res) {
+  //   try {
+  //     const user = await User.findByIdAndUpdate(
+  //       req.params.userId,
+  //       { $addToSet: { friends: req.params.friendId } },
+  //       { new: true }
+  //     );
+  //     if (!user) {
+  //       return res.status(404).json({ message: 'No user found with this id!' });
+  //     }
+  //     res.json(user);
+  //   } catch (err) {
+  //     res.status(500).json(err);
+  //   }
+  // },
 
   // Remove a friend from a user's friend list
   async removeFriend(req, res) {

@@ -5,11 +5,12 @@ const reactionSchema = new Schema(        //reactions are subdocuments nested wi
   {
     reactionId: {
         type: Schema.Types.ObjectId,
-        default: () => new Types.ObjectId(),
+        default: () =>  new mongoose.Types.ObjectId(),
     },
-    reactionId: {
-        type: Schema.Types.ObjectId,
-        default: () => new Types.ObjectId(),
+    reactionBody: {
+        type: String,
+        required: true,
+        maxlength: 280
     },
     username: {
         type: String,

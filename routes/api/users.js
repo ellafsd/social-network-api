@@ -2,7 +2,6 @@ const router = require('express').Router();
 const { User, Thought } = require('../../model');
 
 // GET all users
-// ---> /api/users/
 router.get('/', async (req, res) => {
   try {
     const users = await User.find().populate('thoughts').populate('friends');
@@ -26,7 +25,6 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST a new user
-// ---> /api/users/
 router.post('/', async (req, res) => {
   try {
     const newUser = await User.create(req.body);
@@ -36,7 +34,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT to update a user by its _id
+// Update a user by its _id
 router.put('/:id', async (req, res) => {
   try {
     const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
@@ -49,7 +47,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE to remove user by its _id and associated thoughts
+// Remove user by its _id and associated thoughts
 router.delete('/:id', async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
@@ -67,19 +65,48 @@ router.delete('/:id', async (req, res) => {
 // POST to add a new friend to a user's friend list
 router.post('/:userId/friends/:friendId', async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(
+    // Add the friend to the user's friend list
+    await User.findByIdAndUpdate(
       req.params.userId,
       { $addToSet: { friends: req.params.friendId } },
       { new: true }
     );
+
+    // Re-fetch the user to get the updated friends list
+    const user = await User.findById(req.params.userId).populate('friends');
+
     if (!user) {
       return res.status(404).json({ message: 'No user found with this id!' });
     }
+
     res.json(user);
   } catch (err) {
     res.status(500).json(err);
   }
 });
+
+//   try {
+//     // Add the friend to the user's friend list
+//     const user = await User.findByIdAndUpdate(
+//       req.params.userId,
+//       { $addToSet: { friends: req.params.friendId } },
+//       { new: true }
+//     );
+    
+//     if (!user) {
+//       return res.status(404).json({ message: 'No user found with this id!' });
+//     }
+
+//     // Update the friendCount
+//     user.friendCount = user.friends.length;
+//     await user.save();
+
+//     res.json(user);
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// });
+
 
 // DELETE to remove a friend from a user's friend list
 router.delete('/:userId/friends/:friendId', async (req, res) => {

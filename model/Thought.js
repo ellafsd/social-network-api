@@ -13,14 +13,12 @@ const thoughtSchema = new Schema(
     createdAt: {
         type: Date,
         default: Date.now,
-        get: (timestamp) => new Date(timestamp).toLocaleString(),
+        get: (timestamp) => dateFormat(timestamp),
     },
     username: {
         type: String,
         required: true,
         },
-    },
-    {
      reactions:[reactionSchema],    // Array of nested documents created with the reactionSchema
   },
   {

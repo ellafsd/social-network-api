@@ -2,8 +2,7 @@
     "name": "social-network-api",
     "version": "1.0.0",
     "description": "An API for a social network web application where users can share their thoughts, react to friends’ thoughts, and create a friend list.",
-    "main": "index.js",
-    "license": "MIT",
+    "main": "server.js",
     "scripts": {
       "start": "node server.js",
       "dev": "nodemon server.js"
