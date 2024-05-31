@@ -3,8 +3,29 @@ const Thought = require('../../model/Thought');
 const User = require('../../model/User');
 
 
-// GET all thoughts
 // ---> /api/thoughts/
+// POST to create a new thought
+router.post('/', async (req, res) => {
+  try {
+    console.log('Request Body:', req.body); // Log the request body
+
+    const newThought = await Thought.create(req.body);
+    console.log('New Thought Created:', newThought); // Log the created thought
+
+    await User.findByIdAndUpdate(
+      req.body.userId,
+      { $push: { thoughts: newThought._id } },
+      { new: true }
+    );
+    res.json(newThought);
+  } catch (err) {
+    console.error('Error creating thought:', err); // Log the error in detail
+    res.status(500).json({ message: 'Internal server error', error: err.message });
+  }
+});
+
+
+// GET all thoughts
 router.get('/', async (req, res) => {
   try {
     const thoughts = await Thought.find();
@@ -27,20 +48,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST to create a new thought
-router.post('/', async (req, res) => {
-  try {
-    const newThought = await Thought.create(req.body);
-    await User.findByIdAndUpdate(
-      req.body.userId,
-      { $push: { thoughts: newThought._id } },
-      { new: true }
-    );
-    res.json(newThought);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
+
 
 // PUT to update a thought by its _id
 router.put('/:id', async (req, res) => {
