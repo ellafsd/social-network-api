@@ -13,8 +13,6 @@ router.post('/:userId/friends/:friendId', async (req, res) => {
       { $addToSet: { friends: friendId } },    // $addToSet ensures no duplicates
       { new: true }   // Return the updated document
     );
-
-
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -48,3 +46,8 @@ router.delete('/:userId/friends/:friendId', async (req, res) => {
 });
 
 module.exports = router;
+
+
+
+
+
